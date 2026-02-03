@@ -16,9 +16,9 @@ def process_temperature():
         errors="coerce"
     ).dt.date
 
-    q05 = df["temp"].quantile(0.05)
-    q95 = df["temp"].quantile(0.95)
-    df_clean = df[(df["temp"] >= q05) & (df["temp"] <= q95)]
+    p05 = df["temp"].quantile(0.05)
+    p95 = df["temp"].quantile(0.95)
+    df_clean = df[(df["temp"] >= p05) & (df["temp"] <= p95)]
 
     daily = df_clean.groupby("noted_date", as_index=False)["temp"].mean()
     hot5 = daily.nlargest(5, "temp")
@@ -27,16 +27,16 @@ def process_temperature():
     out_dir = "/opt/airflow/data/output"
     os.makedirs(out_dir, exist_ok=True)
 
-    hot5.to_csv(os.path.join(out_dir, "hottest_5.csv"), index=False)
-    cold5.to_csv(os.path.join(out_dir, "coldest_5.csv"), index=False)
+    hot5.to_csv(os.path.join(out_dir, "hot5.csv"), index=False)
+    cold5.to_csv(os.path.join(out_dir, "cold5.csv"), index=False)
 
     print("Данные после фильтрации и преобразования даты:")
     print(df_clean.head())
 
-    print("\n5 самых жарких дней:")
+    print("5 самых жарких дней:")
     print(hot5)
 
-    print("\n5 самых холодных дней:")
+    print("5 самых холодых дней:")
     print(cold5)
 
 with DAG(
