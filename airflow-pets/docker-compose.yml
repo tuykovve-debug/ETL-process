@@ -1,0 +1,37 @@
+services:
+  webserver:
+    image: apache/airflow:2.9.3
+    environment:
+      AIRFLOW_HOME: /opt/airflow_home
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow_home/airflow.db
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      _AIRFLOW_WWW_USER_USERNAME: airflow
+      _AIRFLOW_WWW_USER_PASSWORD: airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./data:/opt/airflow/data
+      - airflow-db:/opt/airflow_home
+    ports:
+      - "8080:8080"
+    command: webserver
+
+  scheduler:
+    image: apache/airflow:2.9.3
+    environment:
+      AIRFLOW_HOME: /opt/airflow_home
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow_home/airflow.db
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./data:/opt/airflow/data
+      - airflow-db:/opt/airflow_home
+    command: scheduler
+
+volumes:
+  airflow-db:
